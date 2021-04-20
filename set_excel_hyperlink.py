@@ -11,15 +11,16 @@ def replace_second(string, a, b):
 
 
 # function that creates new folder of project and copy there three files with modified filed only
-def first_steps(base_path, new_project, dwg_dir, dic_w_replace):
+def first_steps(base_path, new_project, dwg_dir, xlsx_path, dic_w_replace):
     while True:
-        # creating new folder for new project and paste there example .dwg
+        # creating new folder for new project and paste there example .dwg and xlsx
         newpath = '%s\%s' % (base_path, new_project)
         print_path = newpath + "\pdf"
         if not os.path.exists(newpath):
             os.makedirs(newpath)
             os.makedirs(print_path)
             shutil.copy(dwg_dir,"%(x)s\%(y)s\%(y)s.dwg" % {"x": base_path, "y": new_project})
+            shutil.copy(xlsx_path,"%(x)s\%(y)s\%(y)s.xlsx" % {"x": base_path, "y": new_project})
         else:
             print("New project path already exists.\nNothing has been done.")
             break
