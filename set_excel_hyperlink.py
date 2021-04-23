@@ -2,6 +2,9 @@ import os
 import openpyxl
 from openpyxl import Workbook
 from openpyxl import load_workbook
+from openpyxl.styles import Font, Fill
+from openpyxl.styles import colors
+from openpyxl.styles import Border, Side, Font, Alignment
 import shutil
 import datetime
 
@@ -59,10 +62,18 @@ def first_steps(base_path, new_project, dwg_dir, xlsx_path, dic_w_replace):
         break
 
 
+# set thin border for certain cells
+def set_border(ws, cell_range):
+    thin = Side(border_style="thin", color="000000")
+    for row in ws[cell_range]:
+        for cell in row:
+            cell.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+
+
 # function that compare two lists, first list of existing folders and list in excel with folders
 # if lists are the same program returns information about that
 # if not it returns information that all was added
-def edit_excel_histry(list_values):
+def edit_excel_histry(list_values, date, new_project):
     while True:
         wb = load_workbook("D:\kamil\historia.xlsx")
         ws = wb.active
@@ -74,14 +85,20 @@ def edit_excel_histry(list_values):
         if len(first_set - second_set) == 0:
             print("List of folders in excel and path are the same\nNothing has been added.")
             break
-        row_num = list_values.index(list(second_set - first_set)[0])+1
-        ws.insert_rows(row_num)
+        row_num = list_values.index(new_project)+2
+        print(row_num)
+        ws.insert_rows(row_num, amount=1)
+        set_border(ws, "A%s:S%s" % (row_num, row_num))
         second_set = list(second_set)
         second_set.sort()
-        for num, elem in enumerate(second_set, start=1):
-            wb.active['A'+str(num)].hyperlink = "D:/kamil/"+elem
-            wb.active['A'+str(num)].value = elem
-            wb.active['A'+str(num)].style = "Hyperlink"
+        for num, elem in enumerate(second_set, start=2):
+            ws['A'+str(num)].hyperlink = "D:/kamil/"+elem
+            ws['A'+str(num)].value = elem
+            ws['A'+str(num)].style = "Hyperlink"
+        # ws['B'+str(row_num)] = date
+        # work_sheet_a1 = ws['B'+str(row_num)]
+        # work_sheet_a1.font = Font(color='000000', name="Consolas")
+        # work_sheet_a1.number_format = '0'
         wb.save("D:\kamil\historia.xlsx")
         print("Added new folder hyperlink path to excel.")
         break
