@@ -2,8 +2,8 @@ import set_excel_hyperlink as seh
 
 # Can be changed:
 ##############################
-new_project = 'OOT9011A'                               # brand new name for the project
-new_date = '210420'                                        # date which appears in AutoCAD in layouts names
+new_project = 'OTS9301A'                                 # brand new name for the project
+new_date = '210423'                                        # date which appears in AutoCAD in layouts names
 new_rev_1 = "REW.01"                                       # new revision num - full version PS_e, PS01, T01 & T02
 new_rev_2 = "REW.02"                                       # new revision num - shorter version T01 & T02
 ##############################
@@ -26,4 +26,4 @@ dic_w_replace = {old_project: new_project,
 seh.first_steps(base_path, new_project, dwg_dir, xlsx_path, dic_w_replace)
 fold_list = seh.list_of_folders()
 seh.create_excel_histry(fold_list)
-seh.edit_excel_histry(fold_list)
+seh.edit_excel_histry(fold_list, new_date, new_project)
