@@ -2,9 +2,7 @@ import os
 import openpyxl
 from openpyxl import Workbook
 from openpyxl import load_workbook
-from openpyxl.styles import Font, Fill
-from openpyxl.styles import colors
-from openpyxl.styles import Border, Side, Font, Alignment
+from openpyxl.styles import Font, Fill, PatternFill, colors, Border, Side, Font, Alignment
 import shutil
 import datetime
 import re
@@ -34,7 +32,7 @@ class NewProject:
             if not os.path.exists(self.newpath):
                 os.makedirs(self.newpath)
                 os.makedirs(print_path)
-                shutil.copy(r"D:\kamil\_scripts\templates\Drawing5.dwg","%(x)s\%(y)s\%(y)s.dwg" % {"x": r'D:\kamil', "y": self.new_project})
+                shutil.copy(r"D:\kamil\_scripts\templates\Drawing5.dwg","%(x)s\%(y)s\%(y)s_REW.01_%(z)s_SIR_DWG.dwg" % {"x": r'D:\kamil', "y": self.new_project, "z": self.new_date})
                 shutil.copy(r"D:\kamil\_scripts\templates\KALKULATOR_KK_nieghaslo.xlsx","%(x)s\%(y)s\%(y)s.xlsx" % {"x": r'D:\kamil', "y": self.new_project})
             else:
                 print("New project path already exists.")
@@ -45,6 +43,8 @@ class NewProject:
                 for i in range(len(a)):
                     for key, value in self.dic_w_replace.items():
                         a[i] = a[i].replace(key, value)
+                        if ".dwg" in a[i]:
+                            a[i] = a[i].replace(self.new_project+'.dwg', "%(x)s_REW.01_%(y)s_SIR_DWG.dwg" % {"x": self.new_project, "y": self.new_date})
 
             # creating .dsd file - plotting file
             with open("%(x)s\%(y)s\%(y)s.dsd" % {"x": r'D:\kamil', "y": self.new_project}, "w") as f:
@@ -115,6 +115,7 @@ class NewProject:
                     work_sheet_a1 = ws['B'+str(row_num)]
                     work_sheet_a1.font = Font(color='000000', name="Consolas")
                     work_sheet_a1.number_format = '0'
+                    work_sheet_a1.fill = PatternFill(fgColor="00666699", fill_type = "solid")
                     wb.save("D:\kamil\historia.xlsx")
                     print("Added new folder hyperlink path to excel.")
                     break
@@ -152,10 +153,9 @@ class NewProject:
             else:
                 proj_name = self.new_project[:3]+" "+self.new_project[3:7]+" "+self.new_project[7:]
                 path = r"D:\kamil\_scripts\templates\tagi.SCR"
-                date = datetime.datetime.now().isoformat()[:10]
-                date = date[5:7]+"."+date[:4]
+                date = self.new_date[2:4]+".20"+self.new_date[:2]
                 area = self.lok2[self.lok2.index(".",self.lok2.index(".")+1)+1:]
-                tower_type = re.compile(r'E\d/\d\d').findall(self.lok1)[0]
+                tower_type = "BOT " + re.compile(r'E\d/\d\d').findall(self.lok1)[0]
                 platform_type = NewProject.check_platform(self, tower_type)
                 list_values = [proj_name, date, self.lok1, self.lok2, area, tower_type, platform_type]
 
