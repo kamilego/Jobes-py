@@ -1,12 +1,9 @@
-import csv
-import openpyxl
 from openpyxl import Workbook
-from openpyxl.styles import Font, Fill, PatternFill, colors, Border, Side, Font, Alignment
-import string
+from openpyxl.styles import PatternFill, Border, Side
 from math import sqrt
 
 
-def asd(row):
+def check_value(row):
     z = max(l[3] for l in row)
     k = min(l[3] for l in row)
     if abs(k) < abs(z):
@@ -46,7 +43,7 @@ def max_force(row):
     cell_properties(ws.cell(row, 2),"00008000")
 
 
-with open(r"D:\kamil\RTON Kisielice\cs2.txt", "r") as a:
+with open(r"D:\kamil\RTON Kisielice\csv4.txt", "r") as a:
     a = a.readlines()
 
 for i in range(len(a)):
@@ -73,7 +70,7 @@ for elem in test:
 diction ={}
 
 for row in all_list:
-    diction[asd(row)[0]] = asd(row)[1]
+    diction[check_value(row)[0]] = check_value(row)[1]
 
 prety = sorted(set([int(elem[3:]) for elem in list(diction.keys())]))
 kombinacje = sorted(set([elem[:2] for elem in list(diction.keys())]))
@@ -87,6 +84,7 @@ for name in prety:
     ws.cell(row1, num1).value = name
     cell_properties(ws.cell(row1, num1),"00C0C0C0")
     row1 += 3
+
 
 for ami in range(0,len(diction.values()),39):
     for to in range(3,len(prety)*3+1,3):
@@ -116,14 +114,29 @@ for num in range(3,len(prety)*3+2,9):
     list_of_values.append(max(ws.cell(num+1,2).value, ws.cell(num+4,2).value, ws.cell(num+7,2).value))
 
 elem_max = max(list_of_values)
-ws2.cell(2,7).value = "Segment"
-ws2.cell(2,8).value = "Wartość"
-for row in range(3,33):
-    ws2.cell(row,7).value = row-2
-    ws2.cell(row,8).value = list_of_values[row-3]
-    cell_properties(ws2.cell(row, 8),"00FFFFFF")
-    cell_properties(ws2.cell(row, 7),"00FFFFFF")
-    if row-3 == list_of_values.index(elem_max):
-        cell_properties(ws2.cell(row, 8),"00FF6600")
 
-wb.save(r"D:\kamil\RTON Kisielice\Nowy Arkusz programu Microsoft Excel.xlsx")
+for row in range(2, len(list_of_values)+3):
+    for col in range(8,9):
+        if row == 2:
+            ws2.cell(row,7).value = "Segment"
+            ws2.cell(row,8).value = "Wartość"
+            ws2.cell(row,9).value = "Wytężenie"
+        else:
+            ws2.cell(row,7).value = row-2
+            ws2.cell(row,8).value = list_of_values[row-3]
+            cell_properties(ws2.cell(row, col),"00FFFFFF")
+            if row-3 == list_of_values.index(elem_max):
+                cell_properties(ws2.cell(row, 8),"00FF6600")
+
+nb14_2 = 2204.391594
+nb12_5 = 1967.702317
+
+for row in range(2, len(list_of_values)+3):
+    if row == 8 or row == 14 or row == 20 or row == 26:
+        ws2.cell(row, 9).value = list_of_values[row-3]/nb14_2
+        ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb14_2)*100))+"%"
+    else:
+        ws2.cell(row, 9).value = list_of_values[row-3]/nb12_5
+        ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb12_5)*100))+"%"
+
+wb.save(r"D:\kamil\RTON Kisielice\max_forces_prety.xlsx")
