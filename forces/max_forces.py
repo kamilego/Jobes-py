@@ -1,7 +1,9 @@
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Border, Side
 from math import sqrt
+import time
 
+begin_time = time.time()
 
 def check_value(row):
     z = max(l[3] for l in row)
@@ -43,7 +45,7 @@ def max_force(row):
     cell_properties(ws.cell(row, 2),"00008000")
 
 
-with open(r"D:\kamil\RTON Kisielice\csv4.txt", "r") as a:
+with open(r"D:\kamil\RTON Kisielice\csv_rozdzielone\csv_kraw3.txt", "r") as a:
     a = a.readlines()
 
 for i in range(len(a)):
@@ -72,8 +74,8 @@ diction ={}
 for row in all_list:
     diction[check_value(row)[0]] = check_value(row)[1]
 
-prety = sorted(set([int(elem[3:]) for elem in list(diction.keys())]))
-kombinacje = sorted(set([elem[:2] for elem in list(diction.keys())]))
+prety = sorted(set([int(elem.split("_")[1]) for elem in list(diction.keys())]))
+kombinacje = sorted(set([int(elem.split("_")[0]) for elem in list(diction.keys())]))
 
 wb = Workbook()
 ws = wb.active
@@ -95,7 +97,7 @@ for ami in range(0,len(diction.values()),39):
             
 for to in range(2,len(prety)*3+2,3):
     for ro in range(3,len(kombinacje)+3):
-        ws.cell(to, ro).value = list(diction.keys())[ro-3][:2]
+        ws.cell(to, ro).value = (list(diction.keys())[ro-3]).split("_")[0]
         cell_properties(ws.cell(to, ro),"00666699")
     for num in range(4,16):
         ws.cell(to+2, num).value = ws.cell(to+1, 3).value - ws.cell(to+1, num).value
@@ -139,4 +141,6 @@ for row in range(2, len(list_of_values)+3):
         ws2.cell(row, 9).value = list_of_values[row-3]/nb12_5
         ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb12_5)*100))+"%"
 
-wb.save(r"D:\kamil\RTON Kisielice\max_forces_prety.xlsx")
+wb.save(r"D:\kamil\RTON Kisielice\krat3.xlsx")
+
+print(round(time.time() - begin_time,2))
