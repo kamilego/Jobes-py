@@ -2,6 +2,9 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Border, Side
 from math import sqrt
 import time
+import codecs
+import csv
+
 
 begin_time = time.time()
 
@@ -45,13 +48,18 @@ def max_force(row):
     cell_properties(ws.cell(row, 2),"00008000")
 
 
-with open(r"D:\kamil\RTON Kisielice\csv_rozdzielone\csv_kraw3.txt", "r") as a:
-    a = a.readlines()
+path = r"D:\kamil\RTON Kisielice\_NOWE\kraw\kraw2.csv"
+path2 = path[:-3] + "xlsx"
 
+
+with codecs.open(path,"rb","utf-16") as f:
+    a = csv.reader(f,delimiter='\t')
+    a = [''.join(elem) for elem in list(a)[1:]]
+    
 for i in range(len(a)):
     a[i] = change(a[i])
     a[i] = a[i].replace("(K)","").replace("\n","").replace("/",";").replace("KAM","/").split(";")
-del a[0]
+
 
 test = [a[i:975+i] for i in range(0,len(a),975)]
 all_list = []
@@ -141,6 +149,6 @@ for row in range(2, len(list_of_values)+3):
         ws2.cell(row, 9).value = list_of_values[row-3]/nb12_5
         ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb12_5)*100))+"%"
 
-wb.save(r"D:\kamil\RTON Kisielice\krat3.xlsx")
+wb.save(path2)
 
 print(round(time.time() - begin_time,2))
