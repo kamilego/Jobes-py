@@ -5,7 +5,6 @@ import time
 import codecs
 import csv
 
-
 begin_time = time.time()
 
 def check_value(row):
@@ -39,116 +38,154 @@ def cells_range(rowik, a,b):
 
 
 def sumq(row, value):
-    ws.cell(row, value).value = cells_range(row, value+1, value+13)
-    cell_properties(ws.cell(row, value),"00FF6600")
+    ws.cell(row, value+1).value = cells_range(row, value+2, value+14)
+    cell_properties(ws.cell(row, value+1),"00FF6600")
 
 
-def max_force(row):
-    ws.cell(row,2).value = max(ws.cell(row-1,3).value + ws.cell(row,3).value,ws.cell(row-1,16).value + ws.cell(row,16).value,ws.cell(row-1,29).value + ws.cell(row,29).value)
-    cell_properties(ws.cell(row, 2),"00008000")
+def minus_value_check(row, col):
+    if ws.cell(row,col+1).value < 0:
+        return ws.cell(row,col+1).value - ws.cell(row+1,col+1).value
+    else:
+        return ws.cell(row,col+1).value + ws.cell(row+1,col+1).value
 
 
-path = r"D:\kamil\RTON Kisielice\_NOWE\kraw\kraw2.csv"
+def list_check(lis):
+    if len([elem for elem in lis if elem < 0]) == 9:
+        return lis[::-1]
+    else:
+        return lis
+
+
+def max_force(row,col, a):
+    val_list = []
+    for num in range(3,29*4,13):
+        val_list.append(minus_value_check(row-1,num))
+    val_list = sorted(val_list)
+    val_list = list_check(val_list)
+    if a == 1:  
+        value = val_list[-1]
+    else:
+        value = val_list[0]
+    ws.cell(row, col).value = value
+    cell_properties(ws.cell(row, col),"00008000")
+
+
+path = r"D:\kamil\_scripts\pythony\zygry\krawezniki\krawezniki.csv"
 path2 = path[:-3] + "xlsx"
-
 
 with codecs.open(path,"rb","utf-16") as f:
     a = csv.reader(f,delimiter='\t')
     a = [''.join(elem) for elem in list(a)[1:]]
-    
+
 for i in range(len(a)):
     a[i] = change(a[i])
     a[i] = a[i].replace("(K)","").replace("\n","").replace("/",";").replace("KAM","/").split(";")
+a = [row[:4] for row in a]
+
+for num in range(len(a)):
+    for i in range(2):
+        a[num][i] = a[num][i].strip()
+    a[num][0] = int(a[num][0])
+    a[num][2] = int(a[num][2])
+    a[num][3] = float(a[num][3].replace(",","."))
+
+a = sorted(a, key=lambda x: x[2])
 
 
-test = [a[i:975+i] for i in range(0,len(a),975)]
-all_list = []
+all_list = [a[num:num+10] for num in range(0,len(a),10)]
 
-for i in range(len(test)):
-    test[i] = sorted(test[i], key=lambda x: x[2])
-    for elem in test[i]:
-        elem[0] = int(elem[0].strip())
-        elem[2] = int(elem[2])
-        elem[3] = float(elem[3].replace(",","."))
 
-all_list = []
-
-for elem in test:
-    for num in range(0,975,25):
-        all_list.append(elem[num:num+25])
 
 diction ={}
 
 for row in all_list:
     diction[check_value(row)[0]] = check_value(row)[1]
 
-prety = sorted(set([int(elem.split("_")[1]) for elem in list(diction.keys())]))
-kombinacje = sorted(set([int(elem.split("_")[0]) for elem in list(diction.keys())]))
+aa = {}
+
+for elem in range(458):
+	for num in range(0,len(diction),458):
+		aa[list(diction.keys())[elem+num]] = diction[list(diction.keys())[elem+num]]
+
+prety = sorted(set([int(elem.split("_")[1]) for elem in list(aa.keys())]))
+kombinacje = sorted(set([int(elem.split("_")[0]) for elem in list(aa.keys())]))
 
 wb = Workbook()
 ws = wb.active
 
 row1 = 3
-num1 = 2
+num1 = 3
 for name in prety:
     ws.cell(row1, num1).value = name
     cell_properties(ws.cell(row1, num1),"00C0C0C0")
     row1 += 3
 
+for row in range(2,len(prety)*3,3):
+    for num, name in enumerate(kombinacje,start=4):
+        ws.cell(row, num).value = name
+        cell_properties(ws.cell(row, num),"00666699")
+ami = 0
+for to in range(3,len(prety)*3+1,3):
+    for ro in range(4,len(kombinacje)+4):
+        ws.cell(to, ro).value = list(aa.values())[ami]
+        cell_properties(ws.cell(to, ro),"00FFCC99")
+        ami+=1
 
-for ami in range(0,len(diction.values()),39):
-    for to in range(3,len(prety)*3+1,3):
-        for ro in range(3,len(kombinacje)+3):
-            if to == int(ami/13)+3:
-                ws.cell(to, ro).value = list(diction.values())[ro+ami-3]
-                cell_properties(ws.cell(to, ro),"00FFCC99")
-            
+
 for to in range(2,len(prety)*3+2,3):
-    for ro in range(3,len(kombinacje)+3):
-        ws.cell(to, ro).value = (list(diction.keys())[ro-3]).split("_")[0]
-        cell_properties(ws.cell(to, ro),"00666699")
-    for num in range(4,16):
-        ws.cell(to+2, num).value = ws.cell(to+1, 3).value - ws.cell(to+1, num).value
-    for num in range(17,29):
-        ws.cell(to+2, num).value = ws.cell(to+1, 16).value - ws.cell(to+1, num).value
-    for num in range(30,42):
-        ws.cell(to+2, num).value = ws.cell(to+1, 29).value - ws.cell(to+1, num).value
-    for num in range(3,30,13):
+    for num in range(5,17):
+        ws.cell(to+2, num).value = ws.cell(to+1, 4).value - ws.cell(to+1, num).value
+    for num in range(18,30):
+        ws.cell(to+2, num).value = ws.cell(to+1, 17).value - ws.cell(to+1, num).value
+    for num in range(31,43):
+        ws.cell(to+2, num).value = ws.cell(to+1, 30).value - ws.cell(to+1, num).value
+    for num in range(44,56):
+        ws.cell(to+2, num).value = ws.cell(to+1, 43).value - ws.cell(to+1, num).value
+    for num in range(57,69):
+        ws.cell(to+2, num).value = ws.cell(to+1, 56).value - ws.cell(to+1, num).value
+    for num in range(70,82):
+        ws.cell(to+2, num).value = ws.cell(to+1, 69).value - ws.cell(to+1, num).value
+    for num in range(83,95):
+        ws.cell(to+2, num).value = ws.cell(to+1, 82).value - ws.cell(to+1, num).value
+    for num in range(96,108):
+        ws.cell(to+2, num).value = ws.cell(to+1, 95).value - ws.cell(to+1, num).value
+    for num in range(109,121):
+        ws.cell(to+2, num).value = ws.cell(to+1, 108).value - ws.cell(to+1, num).value
+    for num in range(3,120,13):
         sumq(to+2,num)
-    max_force(to+2)
+    max_force(to+2, 2, 0)
+    max_force(to+2, 1, 1)
 
-list_of_values = []
 
 ws2 = wb.create_sheet("Segmenty")
-for num in range(3,len(prety)*3+2,9):
-    list_of_values.append(max(ws.cell(num+1,2).value, ws.cell(num+4,2).value, ws.cell(num+7,2).value))
+ws2.cell(2,5).value = "Plusy"
+ws2.cell(2,6).value = "Minusy"
+ws2.cell(2,7).value = "Segment"
+ws2.cell(2,8).value = "Wartość"
+ws2.cell(2,9).value = "Wytężenie"
 
-elem_max = max(list_of_values)
+for num in range(3,49):
+    ws2.cell(num,7).value = num-2
 
-for row in range(2, len(list_of_values)+3):
-    for col in range(8,9):
-        if row == 2:
-            ws2.cell(row,7).value = "Segment"
-            ws2.cell(row,8).value = "Wartość"
-            ws2.cell(row,9).value = "Wytężenie"
-        else:
-            ws2.cell(row,7).value = row-2
-            ws2.cell(row,8).value = list_of_values[row-3]
-            cell_properties(ws2.cell(row, col),"00FFFFFF")
-            if row-3 == list_of_values.index(elem_max):
-                cell_properties(ws2.cell(row, 8),"00FF6600")
+a12 = [num for num in range(38,1064,27)]
+"=MAX(Sheet!B1:B46)"
+for num, val in enumerate(a12,start=4):
+    ws2.cell(num,5).value = f"=MAX(Sheet!A{val}:A{val+27})"
+    ws2.cell(num,6).value = f"=MIN(Sheet!B{val}:B{val+27})"
 
-nb14_2 = 2204.391594
-nb12_5 = 1967.702317
+a22 = [num for num in range(1064,1352+16*3,16*3)]
+for num, val in enumerate(a22,start=42):
+    ws2.cell(num,5).value = f"=MAX(Sheet!A{val}:A{val+48})"
+    ws2.cell(num,6).value = f"=MIN(Sheet!B{val}:B{val+48})"   
 
-for row in range(2, len(list_of_values)+3):
-    if row == 8 or row == 14 or row == 20 or row == 26:
-        ws2.cell(row, 9).value = list_of_values[row-3]/nb14_2
-        ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb14_2)*100))+"%"
-    else:
-        ws2.cell(row, 9).value = list_of_values[row-3]/nb12_5
-        ws2.cell(row, 10).value = str(round((list_of_values[row-3]/nb12_5)*100))+"%"
+ws2.cell(3,5).value = f"=MAX(Sheet!A3:A37)"
+ws2.cell(3,6).value = f"=MIN(Sheet!B3:B37)"
+
+
 
 wb.save(path2)
 
+
 print(round(time.time() - begin_time,2))
+
+
