@@ -1,53 +1,48 @@
-import os
-from openpyxl import Workbook
+import codecs
+import csv
+import time
+from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Border, Side
 
 
+begin_time = time.time()
+
+
 def cell_properties(cell,color):
-    y = cell
-    y.fill = PatternFill(fgColor=color, fill_type = "solid")
+    cell.fill = PatternFill(fgColor=color, fill_type = "solid")
     thin = Side(border_style="thin", color="000000")
-    y.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+    cell.border = Border(top=thin, left=thin, right=thin, bottom=thin)
 
 
-path = r"D:\kamil\RTON Kisielice\new"
-fil_csv = os.listdir(path)
+path = "D:\kamil\_scripts\pythony\siedlce\przemieszczenia\przemieszczenia.csv"
+komb_d = 11
 
-blank_list = [os.path.join(path,elem) for elem in fil_csv]
-results = []
+path2 = path[:-3] + "xlsx"
+path3 = path[:-4] + "_temp.xlsx"
 
-for elem in blank_list:
-    with open(elem) as r:
-        a = r.readlines()[1:]
-        results.append(a)
+
+with codecs.open(path,"rb","utf-16") as f:
+    results = csv.reader(f,delimiter='\t')
+    results = [elem for elem in results][1:]
 
 new_results = []
 
 for elem in results:
     for i in range(len(elem)):
-        elem[i] = elem[i].replace("\n", "")
-        elem[i] = elem[i].replace(",", ".")
-        elem[i] = elem[i].replace("/", ";")
-        elem[i] = elem[i].split(";")
-        elem[i][0] = int(elem[i][0].strip())
-        elem[i][1] = int(elem[i][1].strip())
-        elem[i][2] = float(elem[i][2])
+        elem[i] = elem[i].replace("\n", "").replace(",", ".").replace("/", ";").split(";")
+        for num in range(3):
+            if not num == 2:
+                elem[i][num] = int(elem[i][num].strip())
+            else:
+                elem[i][num] = float(elem[i][num])
         new_results.append(elem[i])
 
-results = [new_results[i:13+i] for i in range(0,len(new_results),13)]
-
-elem_names = []
-komb_num = []
-
-for elem in results:
-    for num in range(len(elem)):
-        if elem[num][0] not in elem_names: 
-            elem_names.append(elem[num][0])
-        if elem[num][1] not in komb_num:
-            komb_num.append(elem[num][1])
+results = [new_results[i:komb_d+i] for i in range(0, len(new_results), komb_d)]
+elem_names = set([elem[num][0] for elem in results for num in range(len(elem))])
+komb_num = set([elem[num][1] for elem in results for num in range(len(elem))])
 
 
-wb = Workbook()
+wb = load_workbook(path3)
 ws = wb.active
 
 row1 = 3
@@ -59,13 +54,15 @@ for name in elem_names:
 
 step = 0
 
-
-for row in range(2,len(elem_names)*3,3):
-    for num in range(3,len(komb_num)+3):
+for row in range(2, len(elem_names)*3, 3):
+    for num in range(3, len(komb_num)+3):
         ws.cell(row, num).value = komb_num[num-3]
         ws.cell(row+1, num).value = new_results[step][2]
         step += 1
 
-    
-wb.save(r"D:\kamil\RTON Kisielice\asd.xlsx")
+
+wb.save(path2)
+
+
+print(round(time.time() - begin_time,2))
 
