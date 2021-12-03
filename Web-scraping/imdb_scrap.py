@@ -34,3 +34,13 @@ Cast: {", ".join(cast_list)}""")
 
 # html = "https://www.imdb.com/title/tt0770828/"
 # single_movie_scrap(html)
+
+headers = {"Accept-Language": "en-US"}
+website = requests.get("https://www.imdb.com/chart/top", headers=headers)
+soup = BeautifulSoup(website.text, "html.parser")
+
+table = soup.select("tbody .titleColumn a")
+for movie in table:
+    link = movie.attrs["href"]
+    singe_movie = single_movie_scrap(f"http://imdb.com{link}")
+    print()
