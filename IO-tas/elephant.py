@@ -7,22 +7,22 @@ def load_input() -> list:
 
 def calc_sum_mass(values) -> int:
     eleph_weight = {eleph_num: mass for eleph_num, mass in enumerate(values[1], start=1)}
-    elephants = [(values[2][i], values[3][i]) for i in range(int(values[0]))]
+    eleph_position = [(values[2][i], values[3][i]) for i in range(int(values[0]))]
     step = 1
-    sort_eleph = {}
-    while len(elephants) > 0:
-        sort_eleph[step] = [elephants.pop()]
-        for elem in sort_eleph[step]:
-            for elephant in elephants:
-                if elem[0] in elephant:
-                    sort_eleph[step].append(elephants.pop(elephants.index(elephant)))
+    eleph_cycle = {}
+    while len(eleph_position) > 0:
+        eleph_cycle[step] = [eleph_position.pop()[0]]
+        for elem in eleph_cycle[step]:
+            for elephant in eleph_position:
+                if elem in elephant:
+                    eleph_cycle[step].append(eleph_position.pop(eleph_position.index(elephant))[0])
+        eleph_cycle[step] = list(map(lambda x: eleph_weight[x], eleph_cycle[step]))
         step += 1
     min_global = eleph_weight[min(eleph_weight, key=eleph_weight.get)]
     total_mass = 0
-    for key in sort_eleph:
-        sort_eleph[key] = list(map(lambda x: eleph_weight[x[0]], sort_eleph[key]))
-        a = sum(sort_eleph[key])+((len(sort_eleph[key])-2)*min(sort_eleph[key]))
-        b = sum(sort_eleph[key])+min(sort_eleph[key])+((len(sort_eleph[key])+1)*min_global)
+    for key in eleph_cycle:
+        a = sum(eleph_cycle[key])+((len(eleph_cycle[key])-2)*min(eleph_cycle[key]))
+        b = sum(eleph_cycle[key])+min(eleph_cycle[key])+((len(eleph_cycle[key])+1)*min_global)
         total_mass += min(a,b)
     return total_mass
 
