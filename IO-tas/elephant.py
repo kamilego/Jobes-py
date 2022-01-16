@@ -8,16 +8,16 @@ def load_input() -> list:
 def calc_sum_mass(values) -> int:
     eleph_weight = {eleph_num: mass for eleph_num, mass in enumerate(values[1], start=1)}
     eleph_position = [(values[2][i], values[3][i]) for i in range(int(values[0]))]
-    step = 1
+    cycle = 1
     eleph_cycle = {}
     while len(eleph_position) > 0:
-        eleph_cycle[step] = [eleph_position.pop()[0]]
-        for elem in eleph_cycle[step]:
+        eleph_cycle[cycle] = [eleph_position.pop()[0]]
+        for elem in eleph_cycle[cycle]:
             for elephant in eleph_position:
                 if elem in elephant:
-                    eleph_cycle[step].append(eleph_position.pop(eleph_position.index(elephant))[0])
-        eleph_cycle[step] = list(map(lambda x: eleph_weight[x], eleph_cycle[step]))
-        step += 1
+                    eleph_cycle[cycle].append(eleph_position.pop(eleph_position.index(elephant))[0])
+        eleph_cycle[cycle] = list(map(lambda x: eleph_weight[x], eleph_cycle[cycle]))
+        cycle += 1
     min_global = eleph_weight[min(eleph_weight, key=eleph_weight.get)]
     total_mass = 0
     for key in eleph_cycle:
@@ -33,3 +33,4 @@ def main():
     print(result)
 if __name__ == '__main__':
     main()
+    
