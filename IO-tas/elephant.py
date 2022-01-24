@@ -5,31 +5,38 @@ def load_input() -> list:
     return values
 
 
-def calc_sum_mass(values) -> int:
+def create_cycles(values) -> list:
+    eleph_position = {pos: dest_pos for pos, dest_pos in zip(values[2], values[3]) if pos != dest_pos}
+    cycles = []
+    for elephant in values[2]:
+        position = eleph_position.pop(elephant, None)
+        if position is None:
+            continue
+        cycle = [elephant]
+        while elephant != position:
+            cycle.append(position)
+            position = eleph_position.pop(position)
+        cycles.append(cycle)
+    return cycles
+
+
+def calc_sum_mass(values, cycles) -> int:
     eleph_weight = {eleph_num: mass for eleph_num, mass in enumerate(values[1], start=1)}
-    eleph_position = [(pos, dest_pos) for pos, dest_pos in zip(values[2], values[3])]
-    cycle = 1
-    eleph_cycle = {}
-    while len(eleph_position) > 0:
-        eleph_cycle[cycle] = [eleph_position.pop()[0]]
-        for position in eleph_cycle[cycle]:
-            for elephant in eleph_position:
-                if position in elephant:
-                    eleph_cycle[cycle].append(eleph_position.pop(eleph_position.index(elephant))[0])
-        eleph_cycle[cycle] = list(map(lambda x: eleph_weight[x], eleph_cycle[cycle]))
-        cycle += 1
-    min_global_weight = eleph_weight[min(eleph_weight, key=eleph_weight.get)]
+    for i in range(len(cycles)):
+        cycles[i] = list(map(lambda x: eleph_weight[x], cycles[i]))
+    min_global_weight = min(values[1])
     total_mass = 0
-    for cycle in eleph_cycle:
-        a = sum(eleph_cycle[cycle])+((len(eleph_cycle[cycle])-2)*min(eleph_cycle[cycle]))
-        b = sum(eleph_cycle[cycle])+min(eleph_cycle[cycle])+((len(eleph_cycle[cycle])+1)*min_global_weight)
+    for cycle in cycles:
+        a = sum(cycle)+((len(cycle)-2)*min(cycle))
+        b = sum(cycle)+min(cycle)+((len(cycle)+1)*min_global_weight)
         total_mass += min(a, b)
     return total_mass
 
 
 def main():
     data = load_input()
-    result = calc_sum_mass(data)
+    cycles = create_cycles(data)
+    result = calc_sum_mass(data, cycles)
     print(result)
 if __name__ == '__main__':
     main()
