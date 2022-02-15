@@ -1,29 +1,32 @@
 import shutil
 
-path = r"C:\Users\klegowicz\OneDrive - Multiconsult\Dokumenter\punkty.txt"
 
-with open(path, "r") as f:
-    b = f.readlines()
-    
-c = [elem.split()[0] for elem in b][1:]
-h = []
-for elem in c:
-    if not len(elem) > 8:
-        h.append(elem.split("-")[0])
-    else:
-        h.append(elem[:-3])
+def open_edit_txt(path):
+    with open(path, "r") as f:
+        read_data = f.readlines()
+    read_data = [elem.split()[0] for elem in read_data][1:]
+    read_data_split = []
+    for elem in read_data:
+        if not len(elem) > 8:
+            read_data.append(elem.split("-")[0])
+        else:
+            read_data.append(elem[:-3])
+    return read_data
 
-y = set(h[:-7])
-t = list(sorted(y, key=lambda x: int(x[2:])))
-t.insert(13, "ZB-MOP-P")
-t.insert(14, "ZB-MOP-L")
 
-r = []
-for elem in t[::-1]:
-    if elem == "ZB1":
-        continue
-    else:
-        r.append(f"""(command "-layout" "copy" "Layout1 (3)" "{elem}")\n""")
+def final_edit(read_data):
+    read_data = set(read_data[:-7])
+    tank_list = list(sorted(read_data, key=lambda x: int(x[2:])))
+    tank_list.insert(13, "ZB-MOP-P")
+    tank_list.insert(14, "ZB-MOP-L")
+    script_list = []
+    for elem in tank_list[::-1]:
+        if elem == "ZB1":
+            continue
+        else:
+            script_list.append(f"""(command "-layout" "copy" "Layout1 (3)" "{elem}")\n""")
+    return script_list
+
 
 def create_script_file(scripts_list, name):
     temp_path = r"P:\4861A2\5-WRK\5.4-OWN\05_SAN\11_ZBIORNIKI PPOŻ\skrypty\_template.scr"
@@ -32,5 +35,10 @@ def create_script_file(scripts_list, name):
     with open(new_temp_path , "w") as f:
         f.writelines(scripts_list)
         
-
-create_script_file(r, "layout_copy")
+def main():
+    path = r"C:\Users\klegowicz\OneDrive - Multiconsult\Dokumenter\punkty.txt"
+    a = open_edit_txt(path)
+    b = final_edit(a)
+    create_script_file(b, "layout_copy")
+if __name__ == "__main__":
+    main()
