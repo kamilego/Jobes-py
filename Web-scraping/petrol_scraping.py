@@ -19,10 +19,12 @@ def save_scrapped_petrol_data(body: list, file_name_path: str) -> None:
     for elem in body:
         petrol_station_name = elem.find("h3", {"class": "prices-table__name"}).text.strip()
         petrol_station_location = elem.find("span", {"class": "prices-table__location"}).text.strip()
+        date_state = elem.find("span", {"class": "prices-table__date"}).text.strip()
         price = elem.find("span", {"class": "prices-table__price"})
         price = float(price.text.strip()[:4])
-        petrol_dict[petrol_station_name, petrol_station_location] = price
-    with open(file_name_path, "w") as f:
+        if date_state == "dziś":
+            petrol_dict[petrol_station_name, petrol_station_location] = price
+    with open(file_name_path, "w", encoding="utf-8") as f:
         for key, value in petrol_dict.items():
             f.write(f"{key[0]}: {value}zł, {key[1]}\n")
     return petrol_dict
@@ -33,7 +35,7 @@ def load_petrol_data(folder_name: str) -> dict:
     petrol_read_dict = {}
     for file in data_list:
         file_name_path = os.path.join(folder_name, file)
-        with open(file_name_path, "r") as f:
+        with open(file_name_path, "r", encoding="utf-8") as f:
             petrol_data = f.readlines()
             date = file.replace(".txt", "")
             petrol_read_dict[date] = []
@@ -47,18 +49,25 @@ def load_petrol_data(folder_name: str) -> dict:
 def plot_graph(data_dict: dict) -> None:
     for date, price in data_dict.items():
         data_dict[date] = float(price.split(",")[0].split()[-1][:-2])
-    plt.bar(data_dict.keys(), data_dict.values(), width=0.1)
+    min_v, max_v = min(data_dict.values()), max(data_dict.values())
+    index_min_v, index_max_v = list(data_dict.values()).index(min_v), list(data_dict.values()).index(max_v)
+    graph = plt.bar(x=data_dict.keys(), height=data_dict.values(), width=0.3)
+    graph[index_max_v].set_color('r')
+    graph[index_min_v].set_color('g')
     plt.title("Wykres najniższych ceny paliw")
     plt.xlabel("Data")
     plt.ylabel("Cena za litr [zł]")
-    plt.ylim([5, 5.5])
+    plt.ylim([min_v-0.1, max_v+0.1])
+    plt.xticks(rotation=45)
+    for i, v in enumerate(data_dict.values()):
+        plt.text(i, v+0.01, str(v), ha = 'center')
     plt.show()
 
 
 def execution_func(folder_name: str) -> None:
     todays_date = datetime.now().strftime("%d-%m-%y")
     file_check_path = os.path.join(folder_name, todays_date+".txt")
-    if os.path.exists(file_check_path) == False:
+    if not os.path.exists(file_check_path):
         scrapped_element = scrap_site()
         save_scrapped_petrol_data(scrapped_element, file_check_path)
     petrol_read_dict = load_petrol_data(folder_name)
