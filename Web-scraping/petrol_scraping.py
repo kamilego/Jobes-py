@@ -49,6 +49,8 @@ def load_petrol_data(folder_name: str) -> dict:
 def plot_graph(data_dict: dict) -> None:
     for date, price in data_dict.items():
         data_dict[date] = float(price.split(",")[0].split()[-1][:-2])
+    data_dict = {k: data_dict[k] for k in sorted(list(data_dict.keys()), key=lambda x: int(x.split("-")[1]))}
+    print(data_dict)
     min_v, max_v = min(data_dict.values()), max(data_dict.values())
     index_min_v, index_max_v = list(data_dict.values()).index(min_v), list(data_dict.values()).index(max_v)
     graph = plt.bar(x=data_dict.keys(), height=data_dict.values(), width=0.3)
@@ -57,7 +59,7 @@ def plot_graph(data_dict: dict) -> None:
     plt.title("Wykres najniższych ceny paliw")
     plt.xlabel("Data")
     plt.ylabel("Cena za litr [zł]")
-    plt.ylim([min_v-0.1, max_v+0.1])
+    plt.ylim([round(min_v-0.1, 1), round(max_v+0.1, 1)])
     plt.xticks(rotation=45)
     for i, v in enumerate(data_dict.values()):
         plt.text(i, v+0.01, str(v), ha = 'center')
