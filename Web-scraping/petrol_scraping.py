@@ -10,20 +10,22 @@ def scrap_site() -> list:
     website = requests.get(link)
     soup = BeautifulSoup(website.text, "html.parser")
     table = soup.find(class_="prices-table")
-    body = table.select("tr")[1:11]
+    body = table.select("tr")[1:-2]
     return body
 
 
 def save_scrapped_petrol_data(body: list, file_name_path: str) -> None:        
     petrol_dict = {}
     for elem in body:
-        petrol_station_name = elem.find("h3", {"class": "prices-table__name"}).text.strip()
-        petrol_station_location = elem.find("span", {"class": "prices-table__location"}).text.strip()
-        date_state = elem.find("span", {"class": "prices-table__date"}).text.strip()
         price = elem.find("span", {"class": "prices-table__price"})
-        price = float(price.text.strip()[:4])
-        if date_state == "dziś":
-            petrol_dict[petrol_station_name, petrol_station_location] = price
+        date_state = elem.find("span", {"class": "prices-table__date"})
+        if price != "Brak ceny" and date_state is not None:
+            petrol_station_name = elem.find("h3", {"class": "prices-table__name"}).text.strip()
+            petrol_station_location = elem.find("span", {"class": "prices-table__location"}).text.strip()
+            date_state = date_state.text.strip()
+            price = float(price.text.strip()[:4])
+            if date_state == "dziś":
+                petrol_dict[petrol_station_name, petrol_station_location] = price
     with open(file_name_path, "w", encoding="utf-8") as f:
         for key, value in petrol_dict.items():
             f.write(f"{key[0]}: {value}zł, {key[1]}\n")
@@ -50,13 +52,12 @@ def plot_graph(data_dict: dict) -> None:
     for date, price in data_dict.items():
         data_dict[date] = float(price.split(",")[0].split()[-1][:-2])
     data_dict = {k: data_dict[k] for k in sorted(list(data_dict.keys()), key=lambda x: int(x.split("-")[1]))}
-    print(data_dict)
     min_v, max_v = min(data_dict.values()), max(data_dict.values())
     index_min_v, index_max_v = list(data_dict.values()).index(min_v), list(data_dict.values()).index(max_v)
     graph = plt.bar(x=data_dict.keys(), height=data_dict.values(), width=0.3)
     graph[index_max_v].set_color('r')
     graph[index_min_v].set_color('g')
-    plt.title("Wykres najniższych ceny paliw")
+    plt.title("Wykres najniższych cen paliw")
     plt.xlabel("Data")
     plt.ylabel("Cena za litr [zł]")
     plt.ylim([round(min_v-0.1, 1), round(max_v+0.1, 1)])
