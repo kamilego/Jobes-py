@@ -8,6 +8,7 @@ do
 	exam_url=$(grep -o "https://www.examtopics.com/discussions/microsoft/view/.*-exam-dp-203-topic-${topic}-question-${num}-discussion/" temp.txt)
 	if [ -n "$exam_url" ]; then
         	start chrome "$exam_url"
+	#some dummy comment
 	else
         	echo "Could not find topic: ${topic} question: ${num}"
 	fi
