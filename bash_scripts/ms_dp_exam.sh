@@ -17,6 +17,6 @@ do
         else
                 echo "Could not find topic: ${topic} question: ${num}"
         fi
-        #rm temp*.txt
+        rm temp*.txt
 done
 cat dp_exam_url.txt | sort -u | sort -t '-' -k6,6n -k8,8n -o dp_exam_url.txt
