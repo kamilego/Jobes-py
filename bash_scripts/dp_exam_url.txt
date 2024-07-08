@@ -273,8 +273,8 @@ https://www.examtopics.com/discussions/microsoft/view/108729-exam-dp-203-topic-3
 https://www.examtopics.com/discussions/microsoft/view/54544-exam-dp-203-topic-4-question-1-discussion/
 https://www.examtopics.com/discussions/microsoft/view/54909-exam-dp-203-topic-4-question-2-discussion/
 https://www.examtopics.com/discussions/microsoft/view/56279-exam-dp-203-topic-4-question-3-discussion/
-https://www.examtopics.com/discussions/microsoft/view/57163-exam-dp-203-topic-4-question-5-discussion/
 https://www.examtopics.com/discussions/microsoft/view/55538-exam-dp-203-topic-4-question-4-discussion/
+https://www.examtopics.com/discussions/microsoft/view/57163-exam-dp-203-topic-4-question-5-discussion/
 https://www.examtopics.com/discussions/microsoft/view/62056-exam-dp-203-topic-4-question-6-discussion/
 https://www.examtopics.com/discussions/microsoft/view/62062-exam-dp-203-topic-4-question-7-discussion/
 https://www.examtopics.com/discussions/microsoft/view/57163-exam-dp-203-topic-4-question-8-discussion/
@@ -346,3 +346,8 @@ https://www.examtopics.com/discussions/microsoft/view/80136-exam-dp-203-topic-5-
 https://www.examtopics.com/discussions/microsoft/view/80996-exam-dp-203-topic-5-question-5-discussion/
 https://www.examtopics.com/discussions/microsoft/view/81127-exam-dp-203-topic-5-question-6-discussion/
 https://www.examtopics.com/discussions/microsoft/view/87183-exam-dp-203-topic-5-question-7-discussion/
+https://www.examtopics.com/discussions/microsoft/view/68137-exam-dp-203-topic-7-question-1-discussion/
+https://www.examtopics.com/discussions/microsoft/view/74647-exam-dp-203-topic-8-question-1-discussion/
+https://www.examtopics.com/discussions/microsoft/view/62088-exam-dp-203-topic-9-question-1-discussion/
+https://www.examtopics.com/discussions/microsoft/view/60710-exam-dp-203-topic-9-question-2-discussion/
+https://www.examtopics.com/discussions/microsoft/view/60716-exam-dp-203-topic-10-question-1-discussion/
